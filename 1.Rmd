@@ -1,0 +1,70 @@
+---
+title: "APG"
+author: "Lukang Huang"
+date: "2017年11月2日"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Package description
+We have an observed matrix X, some of it's elments are missing. And we want to get an optimal matrix Y according:
+$$\min_{Y in R^{m\times n}} ||P_{\Omega}(Y-X)||_F^2+\lambda||Y||_{S_1}$$
+We using the SOFT-IMPUTING algorithm (Rahul Mazumder& Trevor Hastie 2010) to get the optimal Y.
+
+
+
+
+
+## Simulation Result
+Here is the code and the running result.
+
+```{r }
+library(softimputing)
+library(jpeg)
+img = readJPEG("./girl.jpg")
+#img = img[,,1]
+par(mar = c(0,0,0,0))
+plot(0,0,type = "n")
+rasterImage(img, -1, -1, 1, 1)
+n1<-nrow(img)
+m1<-ncol(img)
+number<-n1*m1*0.6
+I<-sample.int(n1,number,replace=TRUE)
+J<-sample.int(m1,number,replace=TRUE)
+X<-matrix(rep(NA,n1*m1),n1,m1)
+Xmatrix<-function(I,J){
+  for(i in 1:number){
+    
+  X[I[i],J[i]]=img[I[i],J[i]]
+  }
+  return(X)
+}
+X<-Xmatrix(I,J)
+
+par(mar = c(0,0,0,0))
+plot(0,0,type = "n")
+rasterImage(X, -1, -1, 1, 1)
+Init<-matrix(rep(1,n1*m1),n1,m1)
+X1<-X
+for(i in 1:n1){
+  for(j in 1:m1){
+    if(is.na(X[i,j])){
+      X1[i,j]=10000
+    }
+  }
+}
+
+
+lambda=0.5
+Y<-APG(X1,lambda)
+
+plot(0,0,type = "n")
+rasterImage(Y, -1, -1, 1, 1)
+```
+
+
+
+ 
